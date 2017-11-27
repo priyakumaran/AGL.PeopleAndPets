@@ -4,7 +4,8 @@
 
 ### Build & Run
 1. Clone the repository  
-2. Run the Console Project (AGL.PeopleAndPets.Console) . 
+2. Build solution
+3. Run the Console Project (AGL.PeopleAndPets.Console). 
 
 
 ### Project Structure
