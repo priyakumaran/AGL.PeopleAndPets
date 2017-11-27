@@ -25,10 +25,10 @@ AGL.PeopleAndPets consists of the following projects:
 1. This application consumes the json from a web service and output a list of all the cats in alphabetical order under a heading of the gender of their owner.
 2. When looking for pets of type "Cat" and when grouping the owners by their gender, system ignores the casing. E.g. "male", "MALE", "Male" are grouped together
 3. Exception scenarios that are handled are:
-   *API Url is missing in the configuration
-   *Incorrect API Url in configuration
-   *API does not return any JSON
-   *JSON Deserialization failure
+   - API Url is missing in the configuration
+   - Incorrect API Url in configuration
+   - API does not return any JSON
+   - JSON Deserialization failure
 
 
 
