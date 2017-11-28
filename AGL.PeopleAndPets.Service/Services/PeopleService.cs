@@ -15,22 +15,32 @@ namespace AGL.PeopleAndPets.Service.Services
     {
         public Dictionary<string, List<Pet>> GetCatsByPersonGender(List<Person> people)
         {
+            if (people == null || people.Count <= 0) return new Dictionary<string, List<Pet>>();
             var query = (from person in people
-                         where person.Pets != null
-                         from pet in person.Pets
-                         where pet.Type.ToUpper() == "CAT"
-                         group pet by Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(person.Gender.ToLower()) into g
-                         select new { Gender = g.Key, Pets = g.OrderBy(p => p.Name).ToList() }).ToList();
+                where person.Pets != null
+                from pet in person.Pets
+                where pet.Type.ToUpper() == "CAT"
+                group pet by Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(person.Gender.ToLower()) into g
+                select new { Gender = g.Key, Pets = g.OrderBy(p => p.Name).ToList() }).ToList();
             
             var result = query.ToDictionary(a => a.Gender, a => a.Pets);
 
             return result;
         }
 
+        public async Task<Dictionary<string, List<Pet>>> GetCatsByGenderResults(string peopleAndPetsUrl)
+        {
+            var people = await GetPersonList(peopleAndPetsUrl);
+
+            var resultSet = GetCatsByPersonGender(people);
+
+            return resultSet;
+        }
+
         public async Task<List<Person>> GetPersonList(string peopleAndPetsUrl)
         {
           
-            if (peopleAndPetsUrl == null) throw new Exception(CustomExceptionMessages.ApiConfigMissing);
+            if (string.IsNullOrEmpty(peopleAndPetsUrl)) throw new Exception(CustomExceptionMessages.ApiConfigMissing);
             var peopleJson = await GetApiResult(peopleAndPetsUrl);
             if (string.IsNullOrEmpty(peopleJson))
                 throw new Exception($"{CustomExceptionMessages.ApiResponseEmpty}");

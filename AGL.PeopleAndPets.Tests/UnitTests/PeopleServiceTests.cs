@@ -185,9 +185,48 @@ namespace AGL.PeopleAndPets.Tests.UnitTests
 
 
         [TestMethod]
-        public void ValidateGetPersonListReturnsExceptionIfApiUrlNotProvided()
+        public void GroupCatsByPersonGenderAndSortAlphaNoPetsWithCats()
+        {
+            var personList = new List<Person>()
+            {
+                new Person()
+                { Name = "Bob", Age = 23, Gender = "Male",
+                  Pets = new List<Pet>() {new Pet { Name = "Jack" , Type = "Fish"} }
+                },
+                new Person()
+                {
+                    Name = "Samantha", Age = 18, Gender = "Female", Pets = new List<Pet>()
+                }
+            };
+
+            var result = _peopleService.GetCatsByPersonGender(personList);
+            Assert.IsTrue(result.Count == 0);
+
+        }
+
+        [TestMethod]
+        public void GroupCatsByPersonGenderDoesNotFailWhenNoPeople()
+        {
+            var personList = new List<Person>();
+            var result = _peopleService.GetCatsByPersonGender(personList);
+            Assert.IsTrue(result.Count == 0);
+
+        }
+
+
+        [TestMethod]
+        public void ValidateGetPersonListReturnsExceptionIfApiUrlNull()
         {
             Func<Task> asyncFunction = async () => { await _peopleService.GetPersonList(null); };
+            // Assert
+            asyncFunction.ShouldThrow<Exception>(CustomExceptionMessages.ApiConfigMissing);
+
+        }
+
+        [TestMethod]
+        public void ValidateGetPersonListReturnsExceptionIfApiUrlEmpty()
+        {
+            Func<Task> asyncFunction = async () => { await _peopleService.GetPersonList(string.Empty); };
             // Assert
             asyncFunction.ShouldThrow<Exception>(CustomExceptionMessages.ApiConfigMissing);
 
@@ -219,6 +258,39 @@ namespace AGL.PeopleAndPets.Tests.UnitTests
 
             // Assert
             asyncFunction.ShouldNotThrow<Exception>(CustomExceptionMessages.DeserializationUnsuccessful);
+
+        }
+
+
+        [TestMethod]
+        public void ValidateResultsFromApiIntegration()
+        {
+            var results = new Dictionary<string, List<Pet>>();
+            Func<Task> asyncFunction = async () =>
+            {
+                results = await _peopleService.GetCatsByGenderResults(_validApiUrl);
+            };
+            
+            // Assert
+            asyncFunction.ShouldNotThrow<Exception>();
+            //if people exist ensure the pets are sorted alphabetically and are of type "Cat"
+            if (results.Count > 0)
+            {
+                var malePerson = results["Male"];
+                if (malePerson != null && malePerson.Count > 0)
+                {
+                    malePerson.Should().BeInAscendingOrder(x => x.Name);
+                    malePerson.Should().Contain(x => x.Type == "Cat");
+                }
+
+                var femalePerson = results["Female"];
+                if (femalePerson != null && femalePerson.Count > 0)
+                {
+                    femalePerson.Should().BeInAscendingOrder(x => x.Name);
+                    femalePerson.Should().Contain(x => x.Type == "Cat");
+                }
+            }
+           
 
         }
 

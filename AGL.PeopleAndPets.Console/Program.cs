@@ -24,13 +24,10 @@ namespace AGL.PeopleAndPets.Console
 
             try
             {
-                var people = await service.GetPersonList(PeopleAndPetsUrl);
-                if (people != null)
-                {
-                    var resultSet = service.GetCatsByPersonGender(people);
-
-                    DisplayResults(resultSet);
-                }
+                var resultSet = await service.GetCatsByGenderResults(PeopleAndPetsUrl);
+               
+                DisplayResults(resultSet);
+               
             }
             catch (Exception ex)
             {
@@ -41,15 +38,22 @@ namespace AGL.PeopleAndPets.Console
         
         private static void DisplayResults(Dictionary<string, List<Pet>> resultSet)
         {
-            foreach (var group in resultSet)
+            if (resultSet == null || resultSet.Count <= 0 )
             {
-                System.Console.WriteLine(group.Key);
-
-                foreach (var pet in group.Value)
-                {
-                    System.Console.WriteLine(" - " + pet.Name);
-                }
+                System.Console.WriteLine("No People And Pets information exists...");
             }
+            else
+            {
+                foreach (var group in resultSet)
+                {
+                    System.Console.WriteLine(group.Key);
+
+                    foreach (var pet in group.Value)
+                    {
+                        System.Console.WriteLine(" - " + pet.Name);
+                    }
+                }
+            }             
         }
 
     }

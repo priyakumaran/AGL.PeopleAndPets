@@ -8,6 +8,6 @@ namespace AGL.PeopleAndPets.Service.Interfaces
     {
         Task<List<Person>> GetPersonList(string peopleAndPetsUrl);
         Dictionary<string, List<Pet>> GetCatsByPersonGender(List<Person> people);
-        
+        Task<Dictionary<string, List<Pet>>> GetCatsByGenderResults(string peopleAndPetsUrl);
     }
 }
